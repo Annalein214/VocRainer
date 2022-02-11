@@ -1,6 +1,6 @@
 # VocRainer
 
-This is a project to install your own custom vocabulary trainer to your mobile device as offline web app. 
+This is a project to install your own custom flash card trainer to your mobile device as offline web app. 
 The project was motivated by me not finding any app that fit my needs. Especially the training algorithms were worse the more advertised and most apps were not offline usable. 
 So I hope, I will develop a better one in this project. So far there is a simple algorithm which should already be better, I hope.
 
@@ -27,11 +27,11 @@ Mac: reload page without caching to get new js scripts running: Shift + klick th
 
 # Frameworks
 
-jquery-v2.0.3, 
-jquery.mobile-1.4.0
+* jquery-v2.0.3, 
+* jquery.mobile-1.4.0
 
 
 # Links
-jquery icons: https://demos.jquerymobile.com/1.4.5/icons/
-iOS Webapp:
+* jquery icons: https://demos.jquerymobile.com/1.4.5/icons/
+* iOS Webapp:
 https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html
