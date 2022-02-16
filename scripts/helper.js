@@ -18,3 +18,21 @@ function shuffle(array) {
 
   return array;
 }
+
+function timeHumanReadable(seconds){
+  // only sec resolution
+  seconds=parseInt(seconds);
+  // calc hours to seconds
+  var hours = seconds / (60*60);
+  hours = parseInt(hours);
+  var minutes = seconds - (hours*60*60);
+  minutes /= 60;
+  minutes = parseInt(minutes)
+  var secs = seconds - (hours*60*60) - (minutes*60); 
+  // create string
+  var string;
+  if (hours) string = hours+" h ";
+  if (minutes) string = minutes+" min ";
+  if (secs) string = secs+" sec";
+  return string;
+}

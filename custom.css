@@ -1,0 +1,148 @@
+.icon_btn_custom {
+    height: 50px !important;
+    width: 50px !important;
+    font-size: 13px !important;
+}
+
+.icon_btn_custom:after {
+    height: 50px !important;
+    width: 50px !important;
+    margin-left: -25px;
+    margin-top: -25px; 
+}
+
+.icon_btn_wide {
+    width: 92% !important;
+}
+.icon_btn_half {
+    width: 40% !important;
+}
+
+.icon_btn_wide:after {
+    width: 92% !important;
+}
+
+.cs_tab_btn{
+   
+}
+
+.cs_highl_btn{
+    background:  #2098D4 !important;
+}
+
+.bkg_green {
+    background:green !important;
+}
+
+.bkg_red {
+    background:red !important;
+}
+
+#busy {
+    position: fixed;
+    top: 30%;
+    left: 40%;
+    width: 100px;
+    height: 100px; 
+    background-image: url('busy.gif');
+    background-size: 100px; 
+    filter:alpha(opacity=50);
+    -moz-opacity:0.5;
+    -khtml-opacity: 0.5;
+    opacity: 0.5;
+    z-index: 10000;
+    display:none
+}
+
+.textblue{
+    color:  #2098D4;
+}
+
+.textgray{
+    color:  Gainsboro;
+}
+
+.textwhite{
+    color:  white;
+}
+
+.textred{
+    color:  red;
+}
+
+.textorange{
+    color:  darkorange;
+}
+
+.textyellow{
+    color: yellowgreen;
+}
+.textgreen{
+    color:  green;
+}
+
+.textcenter{
+    text-align: center;
+}
+
+#progress {
+     height:5px;
+     width:90%;
+     /*border:2px solid #000;
+     text-align:center;
+     color:#fff;
+     font-size:20px;*/
+     background-image:
+       linear-gradient(green,green),
+       linear-gradient(yellow,yellow),
+       linear-gradient(red,red),
+       linear-gradient(black,black);
+     background-size:
+       0% 100%,
+       0% 100%,
+       0% 100%,
+       100% 100%;
+     background-repeat:no-repeat;
+     /*transition:1s;*/
+}
+
+[type="checkbox"] {
+    float:left; 
+    margin-right:10px;
+}
+
+.truncate {
+    white-space: nowrap;
+    width: 40%;                   /* IE6 needs any width */
+    overflow: hidden;              /* "overflow" value must be different from  visible"*/ 
+    -o-text-overflow: ellipsis;    /* Opera < 11*/
+    text-overflow:    ellipsis;    /* IE, Safari (WebKit), Opera >= 11, FF > 6 */
+}
+
+.quizlevel{
+    float: right;
+    color:  Gainsboro;
+    font-size: 10px;
+}
+
+.bubble{
+    float: left;
+    background: #F2F2F2;
+    color: black;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    height: 16px;
+    font-size: 10px;
+    padding: 4px 5px 0px;
+    text-shadow: none !important;
+}
+
+.bubble span{
+    font-size: 6px;
+}
+
+
+
+
+

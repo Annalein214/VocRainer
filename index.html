@@ -1,14 +1,15 @@
 <!doctype html>
-<html lang="en"  manifest="/cache.manifest">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'> <!-- should prevent zoom, but does not -->
 
     <!-- Apple stuff -->
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="apple-touch-startup-image" href="apple-launch-page.png">
+    <link rel="apple-touch-icon" href="http://annalein.local/apple-touch-icon.png">
+    <link rel="apple-touch-startup-image" href="http://annalein.local/apple-launch-page.png">
     <meta name="apple-mobile-web-app-capable" content="yes"> <!-- hide user interface components -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black"> <!-- hide status bar -->
+    <link rel="shortcut icon" href="#"> <!-- removes "get favicon.ico failed" error -->
     <!-- -->
     <title>VocRainer</title>
     <!-- set device width to screen width, enable zoom-->
@@ -18,11 +19,15 @@
     <script src="jquery.js"></script>
     <script src="jquery/jquery.mobile-1.4.0.min.js"></script>
     <!-- my code -->
+    <link rel="stylesheet" href="custom.css">
     <script src="scripts/helper.js"></script>
     <script src="scripts/db.js"></script>
     <script src="scripts/sync.js"></script>
     <script src="scripts/quiz.js"></script>
+    <script src="scripts/voc.js"></script>
     <script src="scripts/main.js"></script>
+    
+
 </head>
 <body>
 <!-- the basic page -->
@@ -47,6 +52,22 @@
         </div><!-- /navbar -->
         </div><!-- /footer -->
     </div><!-- /page -->
-    <div id="busy" style="position: fixed;top: 30%;left: 40%;width: 100px;height: 100px; background-image: url('busy.gif');background-size: 100px; filter:alpha(opacity=50);-moz-opacity:0.5;-khtml-opacity: 0.5;opacity: 0.5;z-index: 10000;display:none"></div>
+    <div id="busy"></div>
+    <script>
+    if (true){
+        if('serviceWorker' in navigator) {
+          navigator.serviceWorker
+                   .register('/sw.js')
+                   .then(function(registration) {
+                        // Registration was successful
+                        console.log('INDEX: ServiceWorker registration successful with scope: ', registration.scope);
+                    }, function(err) {
+                    // registration failed :(
+                    console.log('INDEX: ServiceWorker registration failed: ', err);
+            });
+
+        }
+    }
+    </script>
 </body>
 </html>

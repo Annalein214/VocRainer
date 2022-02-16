@@ -16,7 +16,7 @@ var sy_importData = function(lastexport){
   console.log("SYNC: IMPORT");
   let lastsync = localStorage.getItem('lastsync'); 
   // access server database and get all entries after last sync and before last export (few sec ago)
-  $.get( "http://annalein.local/~obertacke/php/readsqlite.php?lastsync="+lastsync+"&lastexport="+lastexport, function( data ) {
+  $.get( "https://annalein.local/~obertacke/php/readsqlite.php?lastsync="+lastsync+"&lastexport="+lastexport, function( data ) {
     // exec when import done or no import needed
     var inline = function(){
       const date=Math.floor(new Date().getTime() / 1000)+1;// plus 1 sec to avoid sync of same data 
@@ -61,7 +61,7 @@ var sy_exportData = function(fct){
     var inline_save = function(row, nEntries, trials){
       console.log("SYNC: EXPORT: sending:", row);
       $.ajax({
-        url:"http://annalein.local/~obertacke/php/writesqlite.php",
+        url:"https://annalein.local/~obertacke/php/writesqlite.php",
         type:"POST",
         data:row,
         success: function(data){
