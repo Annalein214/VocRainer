@@ -110,9 +110,26 @@ var loadpage_statistics = function(){
 
 // ----------------------------------------------------------------------------
 
+if (localStorage.getItem("readaloud") === null) {
+  localStorage.setItem('readaloud',1); // default on
+}
 
 var loadpage_settings = function(){
     $('div[data-role="header"] h1').text("Settings");
+
+    var selected=''; 
+    if (localStorage.getItem("readaloud")) selected=' selected=""';
+    $('div[role="main"]').append('<div class="ui-field-contain">'+
+                                    '<label for="readaloud">Read words aloud in quiz:</label>'+
+                                        '<select name="readaloud" id="readaloud" data-role="flipswitch">'+
+                                            '<option value="off">Off</option>'+
+                                            '<option value="on" '+selected+'>On</option>'+
+                                        '</select></div>');
+    $("#readaloud").on("change", function(e){
+        console.log("T", this.value);
+        if (this.value=="off") localStorage.setItem('readaloud',0);
+        else localStorage.setItem('readaloud',1);
+    });
     
     $('div[role="main"]').append('<a id="exportsync" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Sync Database</a><br /><br /><br />');
     $('div[role="main"]').append('Only for developers:<br />');

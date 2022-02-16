@@ -112,25 +112,6 @@ var loadpage_quizstart = function(){
 
                 
         })
-        /* // res = [lecture_name, words_in_lecture]
-        // fill with lectures
-        lecture=res[0][0]; // set to first element which is shown at start
-        for (var i in res){
-
-            $('#quizstart select[name="lecture"]').append('<option value="'+res[i][0]+';'+res[i][1]+'"><span>'+res[i][0]+'</span> <span>&nbsp;&nbsp;&nbsp;('+res[i][1]+')</span></option>');
-        }
-
-        // initialise slider with default lecture
-        il_updateSlider(res[0][1]);
-
-        // update slider with choice
-        $('#quizstart select[name="lecture"]').on('change',function(event){
-            lecture=this.value.split(";")[0];
-            // adjust slider for new lecture
-            var nWordsInLec=this.value.split(";")[1];
-            il_updateSlider(nWordsInLec);
-        });
-        */
     };
     db_getAllLectures(inline_fillLecture, true);
 
@@ -205,9 +186,7 @@ var chooseVariables = function(lectures, tags, nWords){
         //console.log("QUIZ: nWords",nWords, nRows, Math.min(nRows,nWords), QUIZ.length);
         shuffleQuiz();
     }
-    // gives the words with the oldest access
-    //if (lecture!=undefined) db_getWordsOfLecture(lecture, il_chooseVar, sortby="lastaccess");
-    //else console.log("ERROR: QUIZ: Lecture undefined")
+
 
     db_getWordsOfLecAndTag(lectures, tags, nWords, il_chooseVar, sortby="lastaccess");
 }
@@ -347,6 +326,7 @@ var loadpage_quizword = function(){
     theContent+='<a name="showsolution" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-eye ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom">Check</a>';
     theContent+='<a name="correct" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom bkg_green" style="display:none;">Check</a>';
     theContent+='<a name="wrong" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom bkg_red" style="display:none;">Delete</a>';
+    theContent+='<a name="read" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-audio ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom" style="display:none;">Delete</a>';
     theContent+='</div>'; // ui-nodisc-icon
     theContent+='</div>'; // quiz
 
@@ -355,6 +335,15 @@ var loadpage_quizword = function(){
     $('#quiz div[name="foreign"]').text(QUIZ[INDICES[IND]].foreign);
     $('#quiz div[name="native"]').text(QUIZ[INDICES[IND]].native);
     $('#quiz div[name="comment"]').text(QUIZ[INDICES[IND]].comment);
+
+    // read
+    var il_read_foreign=function(){
+        speak(QUIZ[INDICES[IND]].foreign, "jp")
+    }
+    var il_read_native=function(){
+        speak(QUIZ[INDICES[IND]].native, "de");
+    }
+    if(localStorage.getItem("readaloud")) setTimeout(il_read_native, 300);
     
     var strlevel=QUIZ[INDICES[IND]].level; 
     if (isNaN(strlevel)) strlevel=0;
@@ -394,14 +383,19 @@ var loadpage_quizword = function(){
         // save that word was not known, load new page
         il_save(false);
     });
+    $('#quiz div a[name="read"]').click(function(event){ 
+        // save that word was not known, load new page
+        setTimeout(il_read_foreign, 100);
+    });
 
     $('#quiz a[name="showsolution"]').click(function(event){            
         $('#quiz div[name="foreign"]').show();
         $('#quiz div[name="comment"]').show();
         $('#quiz div a[name="wrong"]').show();
+        $('#quiz div a[name="read"]').show();
         $('#quiz div a[name="correct"]').show();
         $('#quiz div a[name="showsolution"]').hide();
-        
+        if(localStorage.getItem("readaloud")) setTimeout(il_read_foreign, 300);
     });
 
 }
