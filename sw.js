@@ -1,4 +1,4 @@
-var CACHE_NAME = 'my-site-cache-v1';
+var CACHE_NAME = 'my-site-cache-v2';
 var urlsToCache = [
   '/',
   '/apple-launch-page.png',
@@ -13,7 +13,8 @@ var urlsToCache = [
   '/scripts/main.js',
   '/scripts/quiz.js',
   '/scripts/sync.js',
-  '/scripts/voc.js'
+  '/scripts/voc.js',
+  '/scripts/speech.js'
 ]; // todo images jquery
 
 self.addEventListener('install', function(event) {
