@@ -175,28 +175,27 @@ var chooseVariables = function(lectures, tags, nWords){
     choose variables by oldest access
     save them into a new table
     */
-
+    console.log("QUIZ: choose variables");
     // once finished with this function: start quiz
-    il_loadpage = function (){
-        loadpage("quizword");
-    }
-
     var il_chooseVar = function (rows){
+        //console.log("QUIZ: Prepare quiz");
         var nRows=rows.length;
         for (var i in rows){
             if (parseInt(i)<parseInt(nWords)) {
                 var fct=null;
                 // only load next page, when finished
-                if (parseInt(i)+1==Math.min(nRows,nWords)) fct=il_loadpage;
+                //console.log("QUIZ: Start quiz once", parseInt(i)+1, Math.min(nRows,nWords));
+                
                 rows[i].sublevel=0;
                 QUIZ.push(rows[i]);
-                db_saveQuizWord(fct, rows[i]);
-                
+                //db_saveQuizWord(fct, rows[i]); // ATTENTION: if you use it again, loadpage needs to be in a wrapper to be executed on success
             }
         }
+
         // randomize the quiz
         //console.log("QUIZ: nWords",nWords, nRows, Math.min(nRows,nWords), QUIZ.length);
         shuffleQuiz();
+        loadpage("quizword");
     }
 
 
@@ -206,7 +205,7 @@ var chooseVariables = function(lectures, tags, nWords){
 // ----------------------------------------------------------------------------
 
 var emptyQuiz = function(){
-        db_emptyQuizTable();
+        //db_emptyQuizTable();
         QUIZ=[];
         QUIZDURATION=0;
     }
@@ -299,7 +298,7 @@ var loadpage_quizword = function(){
 
     // ensure that a varible which was learned sufficiently, is not shown another time
     var i=0;
-    console.log("CONTROL1: ", QUIZ[INDICES[IND]], IND, INDICES[IND], INDICES);
+    //console.log("CONTROL1: ", QUIZ[INDICES[IND]], IND, INDICES[IND], INDICES);
     while (parseInt(QUIZ[INDICES[IND]].sublevel)==TRAININGROUNDS){
         console.log("QUIZ: skipWord: ", parseInt(QUIZ[INDICES[IND]].sublevel), TRAININGROUNDS-1, QUIZ.length, IND);
         IND+=1;
@@ -307,7 +306,7 @@ var loadpage_quizword = function(){
         i+=1;
         // emergency break of while
         if (i>TRAININGROUNDS*10*QUIZ.length) { console.log("QUIZ: break shuffle"); break;}
-        console.log("CONTROL: ", QUIZ[INDICES[IND]], IND, INDICES[IND], INDICES);
+        //console.log("CONTROL: ", QUIZ[INDICES[IND]], IND, INDICES[IND], INDICES);
     }
     
 
@@ -326,19 +325,19 @@ var loadpage_quizword = function(){
     // fill the page with elements
     theContent='<div id="quiz">'
     theContent+='<div id="progress"></div><br />';
-    theContent+='<div name="level" class="quizlevel"></div><br /><br />';
+    theContent+='<div name="level" class="quizlevel"></div><br /><br /><br /><br />';
 
     theContent+='<div name="native" class="textblue textcenter"></div><br />';
     theContent+='<div name="foreign" class="textcenter" style="display:none"></div><br />';
     
-    theContent+='<div name="comment" class="textcenter textgray" style="display:none"></div><br />';
+    theContent+='<div name="comment" class="textcenter textgray" style="display:none"></div><br /><br /><br />';
 
     //theContent+='<a name="showsolution" href="#" class="ui-btn ui-corner-all ui-btn-inline">Show Solution</a>';
     theContent+='<div class="ui-nodisc-icon textcenter">';
-    theContent+='<a name="showsolution" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-eye ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom">Check</a>';
-    theContent+='<a name="correct" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom bkg_green" style="display:none;">Check</a>';
-    theContent+='<a name="wrong" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom bkg_red" style="display:none;">Delete</a>';
-    theContent+='<a name="read" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-audio ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom" style="display:none;">Delete</a>';
+    theContent+='<a name="read" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-audio ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom" style="display:none;">Read</a><br /><br /><br /><br/>';
+    theContent+='<a name="showsolution" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-eye ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom">Check</a><br />';
+    theContent+='<a name="correct" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom bkg_green" style="display:none;">Correct</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+    theContent+='<a name="wrong" href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-notext ui-btn-b ui-btn-inline icon_btn_custom bkg_red" style="display:none;">Wrong</a>';
     theContent+='</div>'; // ui-nodisc-icon
     theContent+='</div>'; // quiz
 
@@ -384,7 +383,8 @@ var loadpage_quizword = function(){
         if (correctAnswer) level+=1;
         else if (level>0) level-=1; 
         QUIZ[INDICES[IND]].sublevel=level;
-        db_saveQuizWord(il_next, QUIZ[INDICES[IND]], level);        
+        //db_saveQuizWord(il_next, QUIZ[INDICES[IND]], level);  
+        il_next();      
     }
 
     $('#quiz div a[name="correct"]').click(function(event){ 

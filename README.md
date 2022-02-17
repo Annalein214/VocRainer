@@ -5,12 +5,12 @@ The project was motivated by me not finding any app that fit my needs. Especiall
 So I hope, I will develop a better one in this project. So far there is a simple algorithm which should already be better, I hope.
 
 
-# Compatibility
+## Compatibility
 
 Not worked on this so far. I use a Mac as server and an iPhone 13 as mobile device. As languages I use German and Japanese. The userinterface is so far in English. I use vocabulary list from Marugoto (https://www.marugoto.org/en/).
 
 
-# Setup
+## Setup
 
 * Download the project to a device with Apache, PHP, and SQLite installed. 
 * SQLite needs its own folder called "db" which needs to be write accessible for the browser ($ chown \_www folder)
@@ -22,19 +22,44 @@ Not worked on this so far. I use a Mac as server and an iPhone 13 as mobile devi
 * In order for offline functionality to work (ServiceWorker), the website needs to be served via SSL. You can make a self signed licence. Opening this in Safari might require to open it first in private mode, then normal mode. Also in order to have a custom icon on iOS you need to serve the homescreen icon via standard http. So you need to setup virtual hosts to have SSL and normal in parallel pointing to the same directory. (see also https://developer.apple.com/forums/thread/92304)
 
 
-# Hint for developers
+## Hint for developers
 
 Mac: reload page without caching to get new js scripts running: Shift + klick the reload button
 
 
-# Frameworks
+## Frameworks
 
 * jquery-v2.0.3, 
 * jquery.mobile-1.4.0
 
 
-# Links
+## Links
 * jquery icons: https://demos.jquerymobile.com/1.4.5/icons/
 * iOS Webapp:
 https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html
 * Offline web app: http://diveintohtml5.info/offline.html
+
+# Implementation details
+
+
+## Timing the quiz
+
+Start time is set
+* at app load
+* load of page quizword
+
+Durations are adjusted
+* set 0 
+** at app start
+** in quiz summary
+* add duration
+** quiz summary 
+** edit in quizword
+** save in quizword
+** in loadpage if previous page is quiz and next is not 
+** NOT in quiz cancel, but this should be handeled in summary
+
+
+
+
+

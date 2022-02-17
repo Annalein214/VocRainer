@@ -35,7 +35,7 @@ var loadpage = function(name, data=null){
     CURRENTPAGE=name;
 
     // make sure time does not run forever
-    if (previousPage =="quiz"){
+    if (previousPage && previousPage.includes('quiz')){
         if (!CURRENTPAGE.includes('quiz')){
             var endQuizTime= new Date();
             QUIZDURATION+=(endQuizTime-STARTTIMEQUIZ)/1000; // ms -> sec       
@@ -135,7 +135,7 @@ var loadpage_settings = function(){
     $('div[role="main"]').append('<a id="exportsync" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Sync Database</a><br /><br /><br />');
     $('div[role="main"]').append('Only for developers:<br />');
     $('div[role="main"]').append('<a id="emptydb" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Delete DB</a><br />');
-    $('div[role="main"]').append('<a id="quizemptytable" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Empty Quiz Tbl</a><br />');
+    //$('div[role="main"]').append('<a id="quizemptytable" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Empty Quiz Tbl</a><br />');
     
     $('#emptydb').click(function(event){            
         //db_cleardb(); 
@@ -144,9 +144,9 @@ var loadpage_settings = function(){
     $('#exportsync').click(function(event){            
         sy_master();        
     });
-    $('#quizemptytable').click(function(event){            
+    /*$('#quizemptytable').click(function(event){            
         db_emptyQuizTable();        
-    }); 
+    }); */
 }
 
 // ----------------------------------------------------------------------------

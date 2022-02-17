@@ -239,7 +239,8 @@ var loadpage_newword = function(data){
             if (quiz) {
                 updateQuiz(row);
                 db_saveNewWord(null,row, false, "");
-                db_saveQuizWord(inline_afterSaveWord, row);
+                inline_afterSaveWord();
+                //db_saveQuizWord(inline_afterSaveWord, row);
             }
             else db_saveNewWord(inline_afterSaveWord,row);
             
@@ -332,7 +333,7 @@ var loadpage_newword = function(data){
         var il_deleteWord=function (){
             if (quiz) {
                 deleteWord(id);
-                db_deleteQuizWord(null, id); 
+                //db_deleteQuizWord(null, id); 
             }
             db_deleteWord (inline_afterSaveWord, id); 
             

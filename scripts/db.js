@@ -282,7 +282,7 @@ var db_deleteWord = function(fct, id){
 // ----------------------------------------------------------------------------
 
 var db_getWordsOfLecAndTag = function(lectures, tags,nWords,fct, sortby=null){
-  console.log("Mache nix");
+  //console.log("Mache nix");
   // maybe use nWords??
 
   const transaction = theDB.transaction([VOCNAME], "readonly");
@@ -313,14 +313,14 @@ var db_getWordsOfLecAndTag = function(lectures, tags,nWords,fct, sortby=null){
         }
       }
       if (countWords==nWords){
-        console.log("DB: db_getAllVoc", result);
+        console.log("DB: db_getWordsOfLecAndTag", result);
         if (fct) fct(result);
         // do not continue with cursor
       }
       else cursor.continue();
     } else {
       // if you are here, fewer words than requested were found
-      console.log("DB: db_getAllVoc", result);
+      console.log("DB: db_getWordsOfLecAndTag", result);
       if (fct) fct(result);
     }
   };
@@ -460,7 +460,7 @@ var db_saveNewWord = function(fct,row){
 // ----------------------------------------------------------------------------
 
 
-
+/*
 var db_saveQuizWord = function(fct,row, level=0){
   // id is identical with main table
 
@@ -508,4 +508,4 @@ var db_deleteQuizWord = function(fct, id){
     if (fct) fct(query.result);
   }
 }
-
+*/
