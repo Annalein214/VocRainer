@@ -15,15 +15,11 @@
     width: 92% !important;
 }
 .icon_btn_half {
-    width: 40% !important;
+    width: 38% !important;
 }
 
 .icon_btn_wide:after {
     width: 92% !important;
-}
-
-.cs_tab_btn{
-   
 }
 
 .cs_highl_btn{
