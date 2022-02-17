@@ -11,7 +11,17 @@ var STARTTIMEQUIZ=new Date();
 
 var loadpage_quizstart = function(){
     /*
-    Show the choices: currently you can choose 1 lecture and the number of words therein
+    Show the choices. It is an OR choice for tags and lectures, i.e. all is summed.
+
+    - make empty form first
+    - set event listener for user interface with slider
+    - fill lecture bubbles
+        - get all lectures and number of words per lecture
+        - go through this list
+        - for first item: fill default in form
+        - for all items: append the bubbles 
+        - add event listener for all bubbles which keeps track of chosen lectures and the total number of available words therein
+    - fill tags (as lectures but w/o default)
     */
 
     // empty quiz if still there:
@@ -35,11 +45,11 @@ var loadpage_quizstart = function(){
     theform+='<span id="nwords" style="text-align: left;padding-left:5px; margin-top: -10px;">'+DEFAULTNWORDS+'</span><br /><br />';
 
     //theform+='<label for="lecture" style="text-align: right; margin-top: 3px; margin-right: 10px; float: left;">Lecture:</label><select name="lecture"></select><br /><br />';
-    theform+='<label for="lecture_coll" style="text-align: right; float: left;margin-right: 10px; ">Lecture:</label>'+
-                '<div id="lecture_coll"></div><br /><br /><br /><br />';
+    theform+='<div style="margin-bottom:50px"><label for="lecture_coll" style="text-align: right; float: left;margin-right: 10px; ">Lecture:</label>'+
+                '<div id="lecture_coll"></div></div><div style="clear:both;"></div><br />';
 
-    theform+='<label for="tag_coll" style="text-align: right; float: left;margin-right: 10px; ">Tags:</label>'+
-                '<div id="tag_coll"></div>';
+    theform+='<div style="margin-bottom:10px"><label for="tag_coll" style="text-align: right; float: left;margin-right: 10px; ">Tags:</label>'+
+                '<div id="tag_coll"></div></div>';
     theform+='</form>';
     $('div[role="main"]').append(theform);
 
@@ -51,7 +61,7 @@ var loadpage_quizstart = function(){
 
     var il_updateSlider=function(){
         // update slider and text
-        
+        //console.log("UPDATE SLIDER");
         $('#quizstart input[name="nwords"]').attr("max",availWords);
         $('#quizstart input[name="nwords"]').val(Math.min(availWords, DEFAULTNWORDS));
         $('#quizstart input[name="nwords"]').focus();
@@ -71,13 +81,15 @@ var loadpage_quizstart = function(){
     // ----- lectures
     var inline_fillLecture = function(res){
         // res = [lecture_name, words_in_lecture]
-
-
         for (var i in res){
-            if (res[i][0]=="") continue;
+            if (res[i][0]=="") {
+                $('div[role="main"]').append("ERROR: There is a word with empty lecture, this should not happen and leads to a bug in quiz. Please act on this!");
+                continue;
+            }
             var theclass = 'class="bubble"';
             // initialise sldier
             if (parseInt(i)==0){
+                
                 theclass = 'class="bubble cs_highl_btn"';
                 availWords=res[i][1];
                 il_updateSlider(availWords);
@@ -343,7 +355,7 @@ var loadpage_quizword = function(){
     var il_read_native=function(){
         speak(QUIZ[INDICES[IND]].native, "de");
     }
-    if(localStorage.getItem("readaloud")) setTimeout(il_read_native, 300);
+    if(parseInt(localStorage.getItem("readaloud"))) il_read_native();
     
     var strlevel=QUIZ[INDICES[IND]].level; 
     if (isNaN(strlevel)) strlevel=0;
@@ -395,7 +407,7 @@ var loadpage_quizword = function(){
         $('#quiz div a[name="read"]').show();
         $('#quiz div a[name="correct"]').show();
         $('#quiz div a[name="showsolution"]').hide();
-        if(localStorage.getItem("readaloud")) setTimeout(il_read_foreign, 300);
+        if(parseInt(localStorage.getItem("readaloud"))) setTimeout(il_read_foreign, 100);
     });
 
 }

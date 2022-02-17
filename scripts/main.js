@@ -126,9 +126,10 @@ var loadpage_settings = function(){
                                             '<option value="on" '+selected+'>On</option>'+
                                         '</select></div>');
     $("#readaloud").on("change", function(e){
-        console.log("T", this.value);
+        
         if (this.value=="off") localStorage.setItem('readaloud',0);
         else localStorage.setItem('readaloud',1);
+        //console.log("T", this.value, localStorage.getItem("readaloud"));
     });
     
     $('div[role="main"]').append('<a id="exportsync" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Sync Database</a><br /><br /><br />');

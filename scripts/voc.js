@@ -12,8 +12,8 @@ var loadpage_voc=function(data){
         loadpage("newword", ["", null, false, ""]);
     });
 
-    var tabbar='<a id="showLectures" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_half cs_tab_btn cs_highl_btn">Lectures</a>';
-    tabbar+='<a id="showTags" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_half cs_tab_btn">Tags</a>';
+    var tabbar='<a id="showLectures" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_half cs_highl_btn">Lectures</a>';
+    tabbar+='<a id="showTags" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_half">Tags</a>';
     $('div[role="main"]').append(tabbar);
 
     
@@ -211,6 +211,10 @@ var loadpage_newword = function(data){
             lecture=$('#addword select[name="lecture"]').val();
             if (lecture=="add_new_lecture"){
                 lecture=$('#newlecture input').val();
+            }
+            if (lecture=="") {
+                alert("Lecture may not be empty. Please choose a lecture.");
+                return;
             }
             tags=[];
             $(':checkbox').each(function() {
