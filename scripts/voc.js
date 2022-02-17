@@ -12,8 +12,18 @@ var loadpage_voc=function(data){
         loadpage("newword", ["", null, false, ""]);
     });
 
-    var tabbar='<a id="showLectures" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_half cs_highl_btn">Lectures</a>';
-    tabbar+='<a id="showTags" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_half">Tags</a>';
+
+    // the tabbar, adjust so that if you come back from tabs, the tab button is highlighted
+    var tabbar="";
+    //
+    tabbar+='<a id="showTags" href="#" style="float:right; margin-right:0px" class="ui-btn ui-corner-all ui-btn-inline icon_btn_half ';
+    if (showTags) tabbar+='cs_highl_btn';
+    tabbar+='">Tags</a>';
+    //
+    tabbar+='<a id="showLectures" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_half '; // space at the end is important!
+    if (!showTags) tabbar+='cs_highl_btn';
+    tabbar+='">Lectures</a>';
+    //
     $('div[role="main"]').append(tabbar);
 
     
@@ -23,19 +33,24 @@ var loadpage_voc=function(data){
     var il_populateLect = function(res){
         // process the data retrieved from database, here: unique lecture names
         for (var i in res){
-            $('div[role="main"] ul').append('<li><a href="#" name="'+res[i][0]+'">'+res[i][0]+' ('+res[i][1]+')</a></li>');
+            // res = [name, nWords, avgLevel]
+            $('div[role="main"] ul').append('<li><a href="#" name="'+res[i][0]+'">'+
+                                                '<p style="float:right">'+res[i][1]+'</p>'+
+                                                '<p class="truncate_wide" style="float:left">'+res[i][0]+'</p>'+
+                                                '<p>⦰ '+res[i][2].toFixed(1)+'</p>'+
+                                            '</a></li>');
         }
         // let the list show up:
         $('div[role="main"] ul').listview().listview("refresh"); //$('div[role="main"]').trigger("create"); //$('div[role="main"]').enhanceWithin();// TODO search function
         // add events
         $('div[role="main"] ul li a').unbind( "click" ).click(function(event){            
-            loadpage("words",[event.target.name, null]);
+            loadpage("words",[$(this).attr('name'), null]);
         });
     };
 
     var il_showLectures = function() {
         $('div[role="main"]').append('<ul id="listOfLectures" data-role="listview" data-filter="true" data-filter-placeholder="Search ..." data-filter-reveal="true"  data-inset="true"></ul>');
-        db_getAllLectures(il_populateLect, true);
+        db_getAllLectures(il_populateLect, true, true); // fct, return_nWords, return_AvgLevel
     }
 
     $('#showLectures').click(function(event) {
@@ -55,19 +70,26 @@ var loadpage_voc=function(data){
     var il_populateTag = function(res){
         // process the data retrieved from database, here: unique lecture names
         for (var i in res){
-            if (res[i][0]!="") $('div[role="main"] ul').append('<li><a href="#" name="'+res[i][0]+'">'+res[i][0]+' ('+res[i][1]+')</a></li>');
+            if (res[i][0]!="") {
+                // res = [name, nWords, avgLevel]
+                $('div[role="main"] ul').append('<li><a href="#" name="'+res[i][0]+'">'+
+                                                '<p style="float:right">'+res[i][1]+'</p>'+
+                                                '<p class="truncate_wide" style="float:left">'+res[i][0]+'</p>'+
+                                                '<p>⦰ '+res[i][2].toFixed(1)+'</p>'+
+                                            '</a></li>');
+            }
         }
         // let the list show up:
         $('div[role="main"] ul').listview().listview("refresh"); //$('div[role="main"]').trigger("create"); //$('div[role="main"]').enhanceWithin();// TODO search function
         // add events
         $('div[role="main"] ul li a').unbind( "click" ).click(function(event){            
-            loadpage("words",[null, event.target.name]);
+            loadpage("words",[null, $(this).attr('name')]);
         });
     };
 
     var il_showTags = function() {
         $('div[role="main"]').append('<ul id="listOfTags" data-role="listview" data-filter="true" data-filter-placeholder="Search ..." data-filter-reveal="true"  data-inset="true"></ul>');
-        db_getAllTags(il_populateTag, true);
+        db_getAllTags(il_populateTag, true, true); // fct, return_nWords, return_AvgLevel
     }
 
 

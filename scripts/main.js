@@ -44,7 +44,8 @@ var loadpage = function(name, data=null){
 
     // automatic sync after 1 hour
     const date=Math.floor(new Date().getTime() / 1000)
-    if (parseInt(localStorage.getItem("lastsync")-date >= 3600){
+    console.log("MAIN: Loadpage:", date, localStorage.getItem("lastsync"), date-parseInt(localStorage.getItem("lastsync")));
+    if (date-parseInt(localStorage.getItem("lastsync")) >= 3600){
         // do not interrupt a quiz
         if (previousPage && !previousPage.includes('quizword') && !CURRENTPAGE.includes('quizword')){
             sy_master();

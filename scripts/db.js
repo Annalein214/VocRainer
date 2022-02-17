@@ -101,7 +101,10 @@ setTimeout(db_open, 1000);
 // ----------------------------------------------------------------------------
 
 
-var db_getAllLectures = function(fct, returnNWords){
+var db_getAllLectures = function(fct, returnNWords, returnAvgLevel){
+  // get all unique lectures as array with names as entry
+  // if returnNWords, return an array per entry with [lecture_name, words_in_lecture]
+
   console.log("DB: db_getAllLectures");
   var result = [];
   var resultnWords = [];
@@ -120,7 +123,18 @@ var db_getAllLectures = function(fct, returnNWords){
     query.onsuccess = function() {
       i_success+=1;
       //console.log([lecture, query.result.length], i_success);
-      resultnWords.push([lecture, query.result.length]);
+      if (!returnAvgLevel) resultnWords.push([lecture, query.result.length]);
+      else {
+        var sumLevels=0;
+        //console.log("DEBUG1:", query.result)
+        for (var i in query.result){
+          //console.log("DEBUG2:", query.result[i], parseInt(query.result[i].level), isNaN(query.result[i].level));
+          if (!isNaN(query.result[i].level)) sumLevels+=parseInt(query.result[i].level);
+          // else assume level = 0
+        }
+        var avgLevel=sumLevels/query.result.length;
+        resultnWords.push([lecture, query.result.length, avgLevel]);
+      }
       if (i_success==nEntries) {if (fct) fct(resultnWords);}
     }
   }
@@ -161,7 +175,8 @@ var db_getAllLectures = function(fct, returnNWords){
 // ----------------------------------------------------------------------------
 
 
-var db_getAllTags = function(fct, returnNWords){
+var db_getAllTags = function(fct, returnNWords, returnAvgLevel){
+  // see lecture
   console.log("DB: GetAllTags");
   var result = [];
   var resultnWords = [];
@@ -180,7 +195,18 @@ var db_getAllTags = function(fct, returnNWords){
     query.onsuccess = function() {
       i_success+=1;
       //console.log([tag, query.result.length], i_success);
-      resultnWords.push([tag, query.result.length]);
+      if (!returnAvgLevel)  resultnWords.push([tag, query.result.length]);
+      else {
+        var sumLevels=0;
+        //console.log("DEBUG1:", query.result)
+        for (var i in query.result){
+          //console.log("DEBUG2:", query.result[i], parseInt(query.result[i].level), isNaN(query.result[i].level));
+          if (!isNaN(query.result[i].level)) sumLevels+=parseInt(query.result[i].level);
+          // else assume level = 0
+        }
+        var avgLevel=sumLevels/query.result.length;
+        resultnWords.push([tag, query.result.length, avgLevel]);
+      }
       if (i_success==nEntries) {if (fct) fct(resultnWords);}
     }
   }
