@@ -16,6 +16,8 @@ $( window ).on( "load", function() {
 
     loadpage();
 
+
+
     
 }); // window loaded
 
@@ -35,10 +37,17 @@ var loadpage = function(name, data=null){
     CURRENTPAGE=name;
 
     // make sure time does not run forever
-    if (previousPage && previousPage.includes('quiz')){
-        if (!CURRENTPAGE.includes('quiz')){
-            var endQuizTime= new Date();
-            QUIZDURATION+=(endQuizTime-STARTTIMEQUIZ)/1000; // ms -> sec       
+    if (previousPage && previousPage.includes('quiz') && !CURRENTPAGE.includes('quiz')){
+        var endQuizTime= new Date();
+        QUIZDURATION+=(endQuizTime-STARTTIMEQUIZ)/1000; // ms -> sec       
+    }
+
+    // automatic sync after 1 hour
+    const date=Math.floor(new Date().getTime() / 1000)
+    if (parseInt(localStorage.getItem("lastsync")-date >= 3600){
+        // do not interrupt a quiz
+        if (previousPage && !previousPage.includes('quizword') && !CURRENTPAGE.includes('quizword')){
+            sy_master();
         }
     }
 

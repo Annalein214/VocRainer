@@ -37,6 +37,8 @@ var db_open = function (argument) {
         console.log("MAIN: Database opened successfully");
         theDB = requestDB.result;
 
+        // automatic sync
+        sy_master();
 
     }
 
