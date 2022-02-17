@@ -86,6 +86,9 @@ var loadpage = function(name, data=null){
         case "statistics":
             loadpage_statistics();
             break
+        case "search":
+            loadpage_search(data);
+            break
         case "home":
         default:
             loadpage_home();
@@ -108,6 +111,72 @@ var loadpage_home = function(){
 }
 
 // ----------------------------------------------------------------------------
+
+var loadpage_search = function(data){
+    var searchstring="";
+    if (data && data.length) searchstring=data[0];
+    $('div[data-role="header"] h1').text("Search");
+    $('div[data-role="header"] a[name="left"]').text("Cancel").show().unbind( "click" ).click(function(event){            
+        loadpage("vocabulary");
+    });
+
+
+    var theform='<form id="searchword">';
+    theform+='<input type="text" name="search" type="search" placeholder="Native/Foreign/Comment"></input>'+
+             '<a id="search-btn" href="#" class="ui-btn ui-corner-all ui-btn-inline">Search</a>'
+    theform+='</form>';
+    $('div[role="main"]').append(theform);
+
+    var il_fillRows = function (res){
+        console.log("DEBUG: fillrows", res);
+        $('div[role="main"] ul').append('<li><a href="#" name="'+res.id+'--'+res.lecture+'">'+
+                                                //'<p style="float:right">'+res[i][1]+'</p>'+
+                                                '<p class="truncate" style="float:left">'+res.foreign+'</p>'+
+                                                '<p class="truncate">'+res.native+'</p>'+
+                                            '</a></li>');
+    }
+
+    var il_finish = function(res){
+        console.log("DEBUG: il_finish", res);
+        if (res){
+            $('div[role="main"] ul').listview().listview("refresh");
+            $('div[role="main"] ul li a').unbind( "click" ).click(function(event){    
+                var id=$(this).attr('name').split('--')[1]; 
+                var lecture=$(this).attr('name').split('--')[1];        
+                loadpage("newword",[lecture, id, false, "", searchstring]); //[lecture, id, quiz, tag, search]
+            });
+        }
+        else {
+            $('#listOfFound').remove();
+            $('div[role="main"]').append("<p>No match found!</p>")
+        }
+        $("#busy").hide();
+    }
+
+    var il_search=function(){
+        $("#busy").show();
+        searchstring = $('#searchword input[name="search"]').val();
+        $('div[role="main"]').append('<ul id="listOfFound" data-role="listview" data-filter="true" data-inset="true"></ul>');
+        console.log("MAIN: search string",searchstring);
+        if (searchstring.replace(/\s+/g, '')!="") db_searchWord(searchstring, il_fillRows, il_finish);
+        else {
+            $("#busy").hide();
+        }
+    }
+
+    if (searchstring!=""){
+        $('#searchword input[name="search"]').val(searchstring);
+        il_search();
+    }
+
+
+
+    $('#search-btn').click(il_search);
+
+}
+
+// ----------------------------------------------------------------------------
+
 
 
 var loadpage_statistics = function(){

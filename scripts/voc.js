@@ -8,6 +8,9 @@ var loadpage_voc=function(data){
     if (data) showTags=data[0];
     $('div[data-role="header"] h1').text("Vocabulary");
 
+    $('div[data-role="header"] a[name="left"]').text("Search").show().unbind( "click" ).click(function(event){            
+        loadpage("search");
+    });
     $('div[data-role="header"] a[name="right"]').text("Add").show().unbind( "click" ).click(function(event){            
         loadpage("newword", ["", null, false, ""]);
     });
@@ -187,7 +190,7 @@ var loadpage_words = function(data){
 
 var loadpage_newword = function(data){
     /*
-    data = [lecture, id, quiz, tag] = ["", null, false, ""]
+    data = [lecture, id, quiz, tag, search(string)] = ["", null, false, "", ""]
     if applicable load data from one word with "id", otherwise produce empty strings
     display form (incl. data)
     save data or cancel and show previous page (currently lectures) again
@@ -200,6 +203,9 @@ var loadpage_newword = function(data){
         switch (true){
             case id == null && !cancel: // not true for delete
                 loadpage("newword", [lecture, null, false, tag]);
+                break;
+            case search!=null && search!="":
+                loadpage("search", [search]);
                 break;
             case quiz: 
                 loadpage("quizword"); // ####### todo check not executes wrong stuff
@@ -269,7 +275,7 @@ var loadpage_newword = function(data){
     });
 
     // ----- build basic form ------------------------------
-    theform='<form id="addword">';
+    var theform='<form id="addword">';
     theform+='<label for="foreign">Foreign word:</label><textarea name="foreign" lang="ja" rows="4" cols="16"></textarea><br /><br />';
     theform+='<label for="native">Native translation:</label><textarea name="native" lang="de" rows="4" cols="20"></textarea><br /><br />';
     theform+='<label for="comment">Comment:</label><textarea name="comment" rows="4" cols="20"></textarea><br /><br />';
@@ -285,11 +291,12 @@ var loadpage_newword = function(data){
     var lecture = data[0];
     var id = data[1];
     var quiz = data[2];
+    var search = data[4];
     var foreign = "";
     var native="";
     var comment="";
     var tags=data[3]; 
-    var tag=data[3];
+    var tag=tags;
     var sqlid=0;
     if (id == null){
         $('div[data-role="header"] h1').text("Add new word");

@@ -305,13 +305,36 @@ var db_deleteWord = function(fct, id){
   }
 }
 
+// ----------------------------------------------------------------------------
 
+var db_searchWord = function(word,fct, fct2){
+  // fires all the time: for every single entry found, the fct is executed
+  console.log("DB: searchword", word);
+
+  const transaction = theDB.transaction([VOCNAME], "readonly");
+  const store = transaction.objectStore(VOCNAME);
+  var request = store.openCursor();
+  
+  var countWords=0;
+  request.onsuccess = function(event) {
+    var cursor = event.target.result;  
+    if(cursor) {
+      let value = cursor.value;
+      if (value.native.indexOf(word)!=-1 || value.foreign.indexOf(word)!=-1 || value.comment.indexOf(word)!=-1){
+        if (fct) fct(value);
+        countWords+=1
+      }
+      cursor.continue();
+    } else {
+      // the end
+      if (fct2) fct2(countWords);
+    }
+  };
+}
 
 // ----------------------------------------------------------------------------
 
 var db_getWordsOfLecAndTag = function(lectures, tags,nWords,fct, sortby=null){
-  //console.log("Mache nix");
-  // maybe use nWords??
 
   const transaction = theDB.transaction([VOCNAME], "readonly");
   const store = transaction.objectStore(VOCNAME);
@@ -352,9 +375,11 @@ var db_getWordsOfLecAndTag = function(lectures, tags,nWords,fct, sortby=null){
       if (fct) fct(result);
     }
   };
-
-
 }
+
+// ----------------------------------------------------------------------------
+
+
 var db_getWordsOfLecture = function(lecture,fct, sortby=null){
 
   const transaction = theDB.transaction([VOCNAME], "readonly");
