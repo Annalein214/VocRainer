@@ -30,9 +30,9 @@ function timeHumanReadable(seconds){
   minutes = parseInt(minutes)
   var secs = seconds - (hours*60*60) - (minutes*60); 
   // create string
-  var string;
-  if (hours) string = hours+" h ";
-  if (minutes) string = minutes+" min ";
-  if (secs) string = secs+" sec";
+  var string="";
+  if (hours) string += hours+" h ";
+  if (minutes) string += minutes+" min ";
+  if (secs) string += secs+" sec";
   return string;
 }

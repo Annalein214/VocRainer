@@ -70,6 +70,7 @@ var sy_exportData = function(fct){
         error: function(xhr, status, error) {
           var err = xhr.responseText;
           console.log(err.Message, status, error);
+          $("#busy").hide();
         }
       })
     } // inline_save
@@ -86,6 +87,7 @@ var sy_exportData = function(fct){
           $("#busy").hide();
           // do not o to import here
           alert("Export did not work. Please try again.");
+          $("#busy").hide();
         }
       }
       else{

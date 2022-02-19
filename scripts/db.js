@@ -39,6 +39,8 @@ var db_open = function (argument) {
 
         // automatic sync
         sy_master();
+        // go to main landing page
+        //loadpage("statistics"); does not work
 
     }
 

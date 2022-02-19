@@ -47,7 +47,7 @@ var loadpage = function(name, data=null){
     console.log("MAIN: Loadpage:", date, localStorage.getItem("lastsync"), date-parseInt(localStorage.getItem("lastsync")));
     if (date-parseInt(localStorage.getItem("lastsync")) >= 3600){
         // do not interrupt a quiz
-        if (previousPage && !previousPage.includes('quizword') && !CURRENTPAGE.includes('quizword')){
+        if (previousPage && !previousPage.includes('quizword') && CURRENTPAGE && !CURRENTPAGE.includes('quizword')){
             sy_master();
         }
     }
@@ -83,15 +83,12 @@ var loadpage = function(name, data=null){
         case "settings":
             loadpage_settings();
             break
-        case "statistics":
-            loadpage_statistics();
-            break
         case "search":
             loadpage_search(data);
             break
-        case "home":
+        case "statistics":
         default:
-            loadpage_home();
+            loadpage_statistics();
             break;
     }
 }
@@ -181,9 +178,21 @@ var loadpage_search = function(data){
 
 var loadpage_statistics = function(){
     $('div[data-role="header"] h1').text("Statistics");
-    $('div[role="main"]').append("<p>Lectures:</p>");
-    $('div[role="main"]').append("<p>Words:</p>");
-    $('div[role="main"]').append("<p>Learned over time: Percentage of words with full level compared to all words</p>");
+    $('div[role="main"]').append('<p id="stat_words"></p>');
+    $('div[role="main"]').append('<p id="stat_lect"></p>');
+
+    var il_lec = function(res){
+        console.log("DEBUG15:", res)
+        
+        var nWords=0;
+        for (var i in res){
+            nWords+=parseInt(res[1]);
+        }
+        $('#stat_words').text("Words:"+nWords);
+        $('#stat_lect').text("Lectures:"+i);
+    }
+
+    db_getAllLectures(il_lec, true);
     
 }
 
