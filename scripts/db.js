@@ -4,7 +4,8 @@
 var theDB;
 var DBNAME="Vocabulary"; // indexedDB.deleteDatabase('Vocabulary');
 var VOCNAME="Vocabulary";
-var QUIZNAME="Quiz"
+//var QUIZNAME="Quiz"
+var WORDSNAME="WordsPerDay"
 
 // search db in different browsers
 const indexedDB =
@@ -29,7 +30,7 @@ var requestDB;
 // workaround: put open in to a function with 1sec delay. But issue is that now I cannot require db to be loaded before the page is loaded
 var db_open = function (argument) {
   // open database, version needs to be updated if scheme of db is changed
-  requestDB= indexedDB.open(DBNAME, 6);
+  requestDB= indexedDB.open(DBNAME, 9);
   // db does not need to be closed explicitly anywhere
 
   // require that database is loaded
@@ -38,16 +39,16 @@ var db_open = function (argument) {
         theDB = requestDB.result;
 
         // automatic sync
-        sy_master();
+        //sy_master();
         // go to main landing page
         //loadpage("statistics"); does not work
-
+        loadpage();
     }
 
     // event handlers
   requestDB.onerror = function (event) {
-    console.error("DB: An error occurred with IndexedDB:" + event.target.errorCode);
-    console.error(event);
+    console.logor("DB: An error occurred with IndexedDB:" + event.target.errorCode);
+    console.logor(event);
   };
 
   requestDB.onblocked = function(event){
@@ -81,13 +82,19 @@ var db_open = function (argument) {
     //store.createIndex("colour_and_make", ["colour", "make"], {unique: false,}); 
 
     // ---- table used for quiz
-    const store_quiz = theDB.createObjectStore(QUIZNAME, { keyPath: "id"}); // copy of id from main table
+    /*const store_quiz = theDB.createObjectStore(QUIZNAME, { keyPath: "id"}); // copy of id from main table
     store_quiz.createIndex("foreign_word", ["foreign"], { unique: false });
     store_quiz.createIndex("native_word", ["native"], { unique: false });
     store_quiz.createIndex("comment", ["comment"], { unique: false });
     store_quiz.createIndex("sublevel", ["sublevel"], { unique: false }); // not identical with main table
     store_quiz.createIndex("sublastaccess", ["sublastaccess"], { unique: false }); // not identical with main table
     // do not need: lecture, sqlid, tags, main level, main accessdate
+    */
+
+    const storeLearnedWords = theDB.createObjectStore(WORDSNAME, { keyPath: "id", autoIncrement: true});
+    // simplyfies search, then not only by keypath
+    storeLearnedWords.createIndex("thedate", ["thedate"], { unique: false });
+    storeLearnedWords.createIndex("nWords", ["words"], { unique: false });
   };
 }
 setTimeout(db_open, 1000);
@@ -119,7 +126,7 @@ var db_getAllLectures = function(fct, returnNWords, returnAvgLevel){
     const query = request.getAll(lecture);
 
     query.onerror = function(event) {
-       console.err("DB: GETALLLECTURES: GETNWORDS: error fetching data");
+       console.log("DB: GETALLLECTURES: GETNWORDS: error fetching data");
     };
 
     query.onsuccess = function() {
@@ -191,7 +198,7 @@ var db_getAllTags = function(fct, returnNWords, returnAvgLevel){
     const query = request.getAll(tag);
 
     query.onerror = function(event) {
-       console.err("DB: GETALLLECTURES: GETNWORDS: error fetching data");
+       console.log("DB: GETALLLECTURES: GETNWORDS: error fetching data");
     };
 
     query.onsuccess = function() {
@@ -218,7 +225,7 @@ var db_getAllTags = function(fct, returnNWords, returnAvgLevel){
   var request = store.index('tags').openCursor(null,"nextunique");
 
   request.onerror = function(event) {
-     console.err("error fetching data");
+     console.log("error fetching data");
   };
 
   // collect data // TODO change if long list expected
@@ -277,7 +284,7 @@ var db_getWord = function(fct, id){
   const query = store.get(parseInt(id));
 
   query.onerror = function(event) {
-     console.err("error fetching data");
+     console.log("error fetching data");
   };
 
   // collect data // TODO change if long list expected
@@ -297,7 +304,7 @@ var db_deleteWord = function(fct, id){
   const query = store.delete(parseInt(id));
 
   query.onerror = function(event) {
-     console.err("error fetching data");
+     console.log("error fetching data");
   };
 
   // collect data // TODO change if long list expected
@@ -390,7 +397,7 @@ var db_getWordsOfLecture = function(lecture,fct, sortby=null){
   const query = index.getAll(lecture);
 
   query.onerror = function(event) {
-     console.err("error fetching data");
+     console.log("error fetching data");
   };
 
   // collect data // TODO change if long list expected
@@ -426,7 +433,7 @@ var db_getWordsOfTag = function(tag,fct, sortby=null){
   const query = index.getAll(tag);
 
   query.onerror = function(event) {
-     console.err("error fetching data");
+     console.log("error fetching data");
   };
 
   // collect data // TODO change if long list expected
@@ -501,18 +508,104 @@ var db_saveNewWord = function(fct,row){
   // close connection
   transaction.oncomplete = function () {
 
-    console.log("DB: Stored new data");
+    console.log("DB: Stored new data", row);
     if (fct) {fct();};
   };
   transaction.onerror = function (event) {
-    console.error("DB: db_saveNewWord: An error occurred with transaction:" + event.target.errorCode);
-    console.error(event);
+    console.logor("DB: db_saveNewWord: An error occurred with transaction:" + event.target.errorCode);
+    console.logor(event);
   };
 }
 
 // ----------------------------------------------------------------------------
-// Quiz stuff
+// Statistics stuff
 // ----------------------------------------------------------------------------
+
+
+
+
+
+var db_getStatDates = function(fct, ){
+  console.log("DB: db_getStatDates");
+
+
+  const transaction = theDB.transaction([WORDSNAME], "readonly");
+  const store = transaction.objectStore(WORDSNAME);
+  var request = store.openCursor();//index('thedate')
+  
+  var result = [];
+  //store.openCursor(keyRangeValue).onsuccess = function(event) {
+  request.onsuccess = function(event) {
+    var cursor = event.target.result;
+    if(cursor) {
+      let value = cursor.value;
+      result.push(value);
+      cursor.continue();
+    } else {
+      console.log("DB: db_getStatDates", result);
+      if (fct) fct(result);
+    }
+  };
+}
+
+var db_updateStatDate = function(fct,nWords){
+
+  const date=new Date(); // different date: '2012.08.10'
+  var day = "0" + date.getDate();
+  var month = "0" + date.getMonth();
+  var year = date.getFullYear();
+  var formattedDate = day.substr(-2) + '-' + month.substr(-2)+'-'+year;
+
+  var il_udStatWords = function(row){
+    if (row){
+      var sumWords=parseInt(nWords)+parseInt(row.nWords);
+      var id=row.id;
+    }
+    else{
+      var sumWords=parseInt(nWords)
+      var id=null;
+    }
+
+    console.log("DEBUG:", row, id, sumWords, id!=null);
+
+    // operations are called transactions, they either all succeed or all fail
+    const transaction = theDB.transaction([WORDSNAME], "readwrite");
+    // reference to object store
+    const store = transaction.objectStore(WORDSNAME);
+    if (id!=null)
+      store.put({id:row.id, thedate:formattedDate, nWords:sumWords});
+    else 
+      store.put({thedate:formattedDate, nWords:sumWords});
+    // close connection
+    transaction.oncomplete = function () {
+
+      console.log("DB: db_updateStatDate: Stored new data");
+      if (fct) {fct();};
+    };
+    transaction.onerror = function (event) {
+      console.logor("DB: db_saveNewWord: An error occurred with transaction:" + event.target.errorCode);
+      console.logor(event);
+    };
+  }
+
+  console.log("DB: db_getStatNWords WORDSNAME",formattedDate);
+  const transaction = theDB.transaction([WORDSNAME], "readonly");
+  const store = transaction.objectStore(WORDSNAME);
+  var request = store.index('thedate');
+  const query = request.get(formattedDate);
+  
+  var result = [];
+  query.onsuccess = function(event) {
+    il_udStatWords(query.result);
+  };
+
+  query.onerror = function(event) {
+     console.log("error fetching data");
+  };
+
+  
+}
+
 
 
 /*
@@ -531,8 +624,8 @@ var db_saveQuizWord = function(fct,row, level=0){
     if (fct) {fct();};
   };
   transaction.onerror = function (event) {
-    console.error("DB: db_saveQuizWord: An error occurred with transaction:" + event.target.errorCode);
-    console.error(event);
+    console.logor("DB: db_saveQuizWord: An error occurred with transaction:" + event.target.errorCode);
+    console.logor(event);
   };
 }
 
@@ -554,7 +647,7 @@ var db_deleteQuizWord = function(fct, id){
   const query = store.delete(parseInt(id));
 
   query.onerror = function(event) {
-     console.err("error fetching data");
+     console.log("error fetching data");
   };
 
   // collect data // TODO change if long list expected

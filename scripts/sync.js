@@ -1,12 +1,33 @@
 if (localStorage.getItem("lastsync") === null) {
-  localStorage.setItem('lastsync',0);
+  localStorage.setItem('lastsync',0); // unix time in sec
 }
+
+if (localStorage.getItem("lastsyncattempt") === null) {
+  localStorage.setItem('lastsyncattempt',0); // unix time in sec
+}
+
+// set global timeout for get/post/ajax
+$.ajaxSetup({
+    timeout: 1000,
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+        if (textStatus == 'timeout') {
+            console.log("SYNC: Timeout", textStatus, errorThrown);
+        } else {
+            console.log("SYNC: Some error appeared:", errorThrown);
+        }
+    }
+});
 
 var sy_master = function(){
   // first export, so that data on phone is always dominating in case of a conflict, then import
   // case that 1 entry is edited by server and client not handled
   // delete of word is not handeled
   $("#busy").show(); // terminated at the end of import fct
+  /*setTimeout(function(){
+    $("#busy").hide();
+  }, 1000);*/
+  const date=Math.floor(new Date().getTime() / 1000);
+  localStorage.setItem('lastsyncattempt',date);
   console.log("SYNC MASTER");
   sy_exportData(sy_importData);
 }
@@ -28,7 +49,7 @@ var sy_importData = function(lastexport){
     const obj = JSON.parse(data);
     var nEntries=obj.length;
     for (var i = 0; i < nEntries; i++) {      
-      console.log("SYNC: import",obj[i].fforeign, obj[i].nnative, obj[i].comment, obj[i].lecture, obj[i].tags, obj[i].idb, obj[i].id);
+      console.log("SYNC: import",obj[i].fforeign, obj[i].nnative, obj[i].comment, obj[i].lecture, obj[i].tags, obj[i].idb, obj[i].id,obj[i].level);
       if (obj[i].idb==0) var idb = null;
       else var idb = obj[i].idb
       // trigger function execution only for last item which is to store (the rest of the command should be identical)
@@ -37,11 +58,11 @@ var sy_importData = function(lastexport){
         fct=inline;   
       }
       // use regex to prevent a bug with lecture names with space at the end
-      var row = {foreign:obj[i].fforeign, native:obj[i].nnative, comment:obj[i].comment, lecture:obj[i].lecture.replace(/\s*$/,''), tags:obj[i].tags, id:idb, sqlid:obj[i].id};
+      var row = {foreign:obj[i].fforeign, native:obj[i].nnative, comment:obj[i].comment, lecture:obj[i].lecture.replace(/\s*$/,''), tags:obj[i].tags, id:idb, sqlid:obj[i].id, level:obj[i].level};
       db_saveNewWord(fct,row);    
     }
     if (nEntries==0){
-      console.log("Import of data finished. No data found for export.");
+      console.log("SYNC: Import of data finished. No data found for import.");
       inline();
     }
   }); // get
@@ -69,7 +90,7 @@ var sy_exportData = function(fct){
         },
         error: function(xhr, status, error) {
           var err = xhr.responseText;
-          console.log(err.Message, status, error);
+          console.log(err, status, error);
           $("#busy").hide();
         }
       })
@@ -94,7 +115,7 @@ var sy_exportData = function(fct){
         i_succeeded+=1;
         // check if finished exporting
         if (nEntries == i_succeeded){
-          console.log("SYNC: Export of data finished.");
+          console.log("SYNC: Export of data finished.", data);
           //alert("Export of data finished.");
           if (fct) fct(lastexport);
         }

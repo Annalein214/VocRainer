@@ -327,10 +327,10 @@ var loadpage_quizword = function(){
     theContent+='<div id="progress"></div><br />';
     theContent+='<div name="level" class="quizlevel"></div><br /><br /><br /><br />';
 
-    theContent+='<div name="native" class="textblue textcenter"></div><br />';
-    theContent+='<div name="foreign" class="textcenter" style="display:none"></div><br />';
+    theContent+='<div name="native" class="textblue textcenter" style="white-space: pre-wrap;"></div><br />';
+    theContent+='<div name="foreign" class="textcenter" style="display:none; white-space: pre-wrap;"></div><br />';
     
-    theContent+='<div name="comment" class="textcenter textgray" style="display:none"></div><br /><br /><br />';
+    theContent+='<div name="comment" class="textcenter textgray" style="display:none; white-space: pre-wrap;"></div><br /><br /><br />';
 
     //theContent+='<a name="showsolution" href="#" class="ui-btn ui-corner-all ui-btn-inline">Show Solution</a>';
     theContent+='<div class="ui-nodisc-icon textcenter">';
@@ -452,6 +452,8 @@ var loadpage_quizsummary = function(){
     QUIZDURATION=0;
 
     if (learnedAnything){
+        db_updateStatDate(null, learned);
+
         // save level back to main db table
         var nQuiz=QUIZ.length;
         for (var i in QUIZ){

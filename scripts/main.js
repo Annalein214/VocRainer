@@ -13,12 +13,6 @@ $( window ).on( "load", function() {
     $('div[data-role="footer"] a').click(function(event){            
         loadpage(event.target.name);
     });
-
-    loadpage();
-
-
-
-    
 }); // window loaded
 
 // ############################################################################
@@ -48,8 +42,14 @@ var loadpage = function(name, data=null){
     if (date-parseInt(localStorage.getItem("lastsync")) >= 3600){
         // do not interrupt a quiz
         if (previousPage && !previousPage.includes('quizword') && CURRENTPAGE && !CURRENTPAGE.includes('quizword')){
-            sy_master();
+            if (localStorage.getItem("lastsyncattempt") >= 3600) {// do not try all the time when offline
+                //sy_master();
+            }
         }
+    }
+
+    if (!theDB) {
+        //setTimeout(loadpage(name, data), 1000);
     }
 
     // first empty the page
@@ -178,20 +178,66 @@ var loadpage_search = function(data){
 
 var loadpage_statistics = function(){
     $('div[data-role="header"] h1').text("Statistics");
+    $('div[role="main"]').append('<h2>Numbers</h2>');
     $('div[role="main"]').append('<p id="stat_words"></p>');
     $('div[role="main"]').append('<p id="stat_lect"></p>');
+    $('div[role="main"]').append('<p id="stat_tags"></p>');
+    $('div[role="main"]').append('<h2>Graphs</h2>');
+    $('div[role="main"]').append('<div><canvas id="wordsPerDay"></canvas></div>');
 
+
+    //----
+    var il_fillGraph = function(res){
+
+        var labels=[];
+        var values=[];
+        for (var i in res){
+            labels.push(res[i].thedate);
+            values.push(res[i].nWords);
+        }
+
+        const data = {
+            labels: labels,
+            datasets: [{
+              label: 'Words per day',
+              backgroundColor: 'rgb(255, 99, 132)',
+              borderColor: 'rgb(255, 99, 132)',
+              data: values,
+            }]
+          };
+
+          const config = {
+            type: 'line',
+            data: data,
+            options: {}
+          };
+
+        const myChart = new Chart(
+            document.getElementById('wordsPerDay'),
+            config
+          );
+    }
+    db_getStatDates(il_fillGraph);
+    
+    
+
+    // ----
+    var il_tag = function(res){
+        $('#stat_tags').text("Tags: "+res.length);
+    }
+    db_getAllTags(il_tag, true);
+
+    // ----
     var il_lec = function(res){
-        console.log("DEBUG15:", res)
+        //console.log("DEBUG15:", res)
         
         var nWords=0;
         for (var i in res){
-            nWords+=parseInt(res[1]);
+            nWords+=parseInt(res[i][1]);
         }
-        $('#stat_words').text("Words:"+nWords);
-        $('#stat_lect').text("Lectures:"+i);
+        $('#stat_words').text("Words: "+nWords);
+        $('#stat_lect').text("Lectures: "+i);
     }
-
     db_getAllLectures(il_lec, true);
     
 }
@@ -208,7 +254,7 @@ var loadpage_settings = function(){
     var selected=''; 
     if (localStorage.getItem("readaloud")) selected=' selected=""';
     $('div[role="main"]').append('<div class="ui-field-contain">'+
-                                    '<label for="readaloud">Read words aloud in quiz:</label>'+
+                                    '<label for="readaloud" style="float:left;width: 70% !important;">Read words aloud in quiz:</label>'+
                                         '<select name="readaloud" id="readaloud" data-role="flipswitch">'+
                                             '<option value="off">Off</option>'+
                                             '<option value="on" '+selected+'>On</option>'+
@@ -219,8 +265,23 @@ var loadpage_settings = function(){
         else localStorage.setItem('readaloud',1);
         //console.log("T", this.value, localStorage.getItem("readaloud"));
     });
+
+    // ------------
     
-    $('div[role="main"]').append('<a id="exportsync" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Sync Database</a><br /><br /><br />');
+    $('div[role="main"]').append('<a id="exportsync" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Sync Database</a><br />');
+    var unix = localStorage.getItem("lastsync");
+    var date = new Date(unix*1000);
+    var hours = date.getHours();
+    var minutes = "0" + date.getMinutes();
+    var formattedTime = hours + ':' + minutes.substr(-2);
+    var day = date.getDate();
+    var month = date.getMonth();
+    var year = date.getFullYear();
+    var formattedDate = day + '.' + month + '.' + year;
+    $('div[role="main"]').append('Last sync: '+formattedDate+' '+formattedTime+' <br /><br /><br />');
+
+    // ------------
+
     $('div[role="main"]').append('Only for developers:<br />');
     $('div[role="main"]').append('<a id="emptydb" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Delete DB</a><br />');
     //$('div[role="main"]').append('<a id="quizemptytable" href="#" class="ui-btn ui-corner-all ui-btn-inline icon_btn_wide">Empty Quiz Tbl</a><br />');

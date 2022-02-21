@@ -15,7 +15,6 @@
     
 
     $sid=intval($_POST['sqlid']);
-    echo ".".$sid.".";
     $fo=$_POST["foreign"];
     $na=$_POST["native"];
     $co= $_POST["comment"];
@@ -37,6 +36,8 @@
 
     $db->close();
     unset($db);
+
+    //var_dump($_POST);
 
     echo "WRITESQLITE: Success";
 
