@@ -196,6 +196,7 @@ var loadpage_newword = function(data){
     save data or cancel and show previous page (currently lectures) again
     */
 
+    // which page to load next:
     // the following does not need to be in success function, only executed when clicked.
     var inline_afterSaveWord = function(cancel){
         //console.log("inline_afterSaveWord", lecture, tag, quiz, id, cancel);
@@ -263,7 +264,7 @@ var loadpage_newword = function(data){
                 }
             }
             //console.log("MAIN: NEWWORD: Save "+foreign+" "+native+" "+lecture+" "+tags+" "+comment);
-            var row = {foreign:foreign, native:native, comment:comment, lecture:lecture, tags:tags, id:id, sqlid:sqlid};
+            var row = {foreign:foreign, native:native, comment:comment, lecture:lecture, level:level, tags:tags, id:id, sqlid:sqlid};
             if (quiz) {
                 updateQuiz(row);
                 db_saveNewWord(null,row, false, "");
@@ -292,6 +293,7 @@ var loadpage_newword = function(data){
     var id = data[1];
     var quiz = data[2];
     var search = data[4];
+    var level=0;
     var foreign = "";
     var native="";
     var comment="";
@@ -311,6 +313,7 @@ var loadpage_newword = function(data){
             native=res.native;
             comment=res.comment;
             tags=res.tags; 
+            level=res.level;
             if (typeof tags == "string") tags = [tags]; // make sure you are working with an array
             sqlid=res.sqlid;
 
