@@ -21,7 +21,7 @@ Not worked on this so far. I use a Mac as server and an iPhone 13 as mobile devi
 
 ## Setup
 
-* Download the project to a device with Apache, PHP, and SQLite installed. 
+* Download the project to a device with Apache with SSL, PHP, and SQLite installed. 
 * SQLite needs its own folder called "db" which needs to be write accessible for the browser ($ chown \_www folder)
 * download jquery and jquery mobile and adjust paths in index.html
 * Adjust path to your csv in php/readcsv.php and open this page with your browser. 

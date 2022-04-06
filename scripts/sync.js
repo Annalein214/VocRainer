@@ -48,21 +48,30 @@ var sy_importData = function(lastexport){
     // parse input and insert into DB
     const obj = JSON.parse(data);
     var nEntries=obj.length;
-    for (var i = 0; i < nEntries; i++) {      
+    for (var i = 0; i < nEntries; i++) {    
       console.log("SYNC: import",obj[i].fforeign, obj[i].nnative, obj[i].comment, obj[i].lecture, obj[i].tags, obj[i].idb, obj[i].id,obj[i].level);
       if (obj[i].idb==0) var idb = null;
-      else var idb = obj[i].idb
+      else var idb = parseInt(obj[i].idb)
       // trigger function execution only for last item which is to store (the rest of the command should be identical)
       var fct=null;
       if (nEntries==i+1) {
         fct=inline;   
       }
       // use regex to prevent a bug with lecture names with space at the end
-      var row = {foreign:obj[i].fforeign, native:obj[i].nnative, comment:obj[i].comment, lecture:obj[i].lecture.replace(/\s*$/,''), tags:obj[i].tags, id:idb, sqlid:obj[i].id, level:obj[i].level};
+      // also convert tags string back to array
+      var row = {foreign:obj[i].fforeign, 
+                 native:obj[i].nnative, 
+                 comment:obj[i].comment, 
+                 lecture:obj[i].lecture.replace(/\s*$/,''), 
+                 tags:obj[i].tags.split(","), 
+                 id:idb, 
+                 sqlid:obj[i].id, 
+                 level:obj[i].level
+               };
       db_saveNewWord(fct,row);    
     }
     if (nEntries==0){
-      console.log("SYNC: Import of data finished. No data found for import.");
+      alert("SYNC: Import of data finished. No data found for import.");
       inline();
     }
   }); // get
@@ -90,6 +99,7 @@ var sy_exportData = function(fct){
         },
         error: function(xhr, status, error) {
           var err = xhr.responseText;
+          alert(err, status, error);
           console.log(err, status, error);
           $("#busy").hide();
         }
@@ -98,6 +108,7 @@ var sy_exportData = function(fct){
     // ----
     // on success of sending data check real success and maybe re-try
     var inline_everytime = function(data, nEntries, trials, row){
+      console.log("EXPORT:", data, nEntries, trials, row);
       trials=trials+1;
       if (data.includes("database is locked")){
         if (trials < 10){
@@ -108,14 +119,20 @@ var sy_exportData = function(fct){
           $("#busy").hide();
           // do not o to import here
           alert("Export did not work. Please try again.");
-          $("#busy").hide();
         }
       }
+      else if (data.includes("Warning") || data.includes("Error") || data.includes("fail")){ // stop export if not successfull
+          $("#busy").hide();
+          // do not o to import here
+          alert("Export did not work. Please try again.");
+          console.log("EXPORT: ERR:", data, nEntries, trials, row);
+      }
+
       else{
         i_succeeded+=1;
         // check if finished exporting
         if (nEntries == i_succeeded){
-          console.log("SYNC: Export of data finished.", data);
+          alert("SYNC: Export of data finished.", data);
           //alert("Export of data finished.");
           if (fct) fct(lastexport);
         }
@@ -126,11 +143,22 @@ var sy_exportData = function(fct){
     var nEntries=res.length;
     for (var i in res){
       var trials = 0;
-      inline_save(res[i], nEntries, trials); // to whatever reason i is a string -> make it int
+      // ajax post does not handle tags well -> convert to string
+      var res2={foreign: res[i].foreign, 
+              native: res[i].native, 
+              tags:res[i].tags.join(","), // --> this is the important change
+              lecture:res[i].lecture,
+              level:res[i].level,
+              lastaccess:res[i].lastaccess,
+              comment:res[i].comment,
+              id:parseInt(res[i].id), 
+              sqlid:parseInt(res[i].sqlid),
+            };
+      inline_save(res2, nEntries, trials); // to whatever reason i is a string -> make it int
     }
     // nothing to export, then directly go into success function
     if (nEntries==0){
-      console.log("SYNC: Export of data finished. No data found for export.");
+      alert("SYNC: Export of data finished. No data found for export.");
       if (fct) fct(lastexport);
     }
 

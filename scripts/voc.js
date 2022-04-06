@@ -168,8 +168,8 @@ var loadpage_words = function(data){
             }
             $('div[role="main"] ul').append('<li><a href="#"" name='+res[i].id+'>'+
                                                 '<p class="'+levelclass+'" style="float:right">'+strlevel+'</p>'+
-                                                '<p class="truncate" style="float:left">'+res[i].foreign+'- </p>'+
-                                                '<p class="truncate">'+res[i].native+'- </p>'+
+                                                '<p class="truncate" style="float:left">'+res[i].foreign+'</p>'+
+                                                '<p class="truncate">'+res[i].native+'</p>'+
                                             '</a></li>');
         }
         // let the list show up:

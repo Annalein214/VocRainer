@@ -3,7 +3,7 @@ var QUIZ=[]; // the quiz is stored here and persistent in extra DB table
 var INDICES=[]; // this randomizes the quiz, integers with length of QUIZ
 var IND=0;
 var TRAININGROUNDS=3;
-var SUMLEVELS=4; // levels are initiated with 0, so human readable SUMLEVELS is SUMLEVELS+1
+var SUMLEVELS=4; // DO NOT CHANGE!! DEPENDENCIES EVERYWHERE! levels are initiated with 0, so human readable SUMLEVELS is SUMLEVELS+1
 var DEFAULTNWORDS=15;
 var QUIZDURATION=0;
 var STARTTIMEQUIZ=new Date();
@@ -326,6 +326,7 @@ var loadpage_quizword = function(){
     theContent='<div id="quiz">'
     theContent+='<div id="progress"></div><br />';
     theContent+='<div name="level" class="quizlevel"></div><br /><br /><br /><br />';
+    theContent+='<div name="tags" class="quizlevel"></div><br /><br /><br /><br />';
 
     theContent+='<div name="native" class="textblue textcenter" style="white-space: pre-wrap;"></div><br />';
     theContent+='<div name="foreign" class="textcenter" style="display:none; white-space: pre-wrap;"></div><br />';
@@ -359,6 +360,10 @@ var loadpage_quizword = function(){
     var strlevel=QUIZ[INDICES[IND]].level; 
     if (isNaN(strlevel)) strlevel=0;
     $('#quiz div[name="level"]').text('Sublevel: '+QUIZ[INDICES[IND]].sublevel+', Level:'+strlevel);
+
+    var strTags=QUIZ[INDICES[IND]].tags.join(", "); 
+    $('#quiz div[name="tags"]').text('Tags: '+strTags);
+
     var progress = calcProgress()[0];
     $('div[data-role="header"] h1').text('Quiz '+parseFloat(progress).toFixed(0)+'%');
     var pd = calcProgress()[1];
@@ -449,10 +454,11 @@ var loadpage_quizsummary = function(){
 
     $('div[role="main"]').append(text);
 
-    QUIZDURATION=0;
+    
 
     if (learnedAnything){
         db_updateStatDate(null, learned);
+        db_updateStatTimeDate(null, QUIZDURATION);
 
         // save level back to main db table
         var nQuiz=QUIZ.length;
@@ -483,6 +489,7 @@ var loadpage_quizsummary = function(){
         $('div[role="main"]').append('<span style="color:red;">Nothing learned. Assume you skipped the quiz early. Do not save results.</span>');
         emptyQuiz();
     }
+    QUIZDURATION=0;
 }
 
 
